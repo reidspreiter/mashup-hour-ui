@@ -1,12 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useUpdate } from "../../hooks";
 import styled, { css } from "styled-components";
 import { useIsMobile } from "../../hooks";
 import * as s from "../../schemas";
 import MashupController from "../mashup";
 import TrackController from "../track";
 import { data } from "../../../sampleData";
+import * as Tone from "tone";
+import { Switch } from "../controls/switches";
+import { Spectrogram, ScrollingImages, Oscilloscope } from "../backgrounds";
+import { PiWaveform, PiWaveSine } from "react-icons/pi";
 
-const MASHUP_LIMIT = 3;
+const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+`;
+
+const NavBar = styled.div`
+  width: 100%;
+  height: 55px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding: 10px;
+  z-index: 5;
+  position: relative;
+  box-sizing: border-box;
+  margin: 0px;
+`;
 
 const Container = styled.div<{ $isMobile?: boolean }>`
   display: flex;
@@ -14,6 +37,7 @@ const Container = styled.div<{ $isMobile?: boolean }>`
   justify-content: space-between;
   align-items: stretch;
   height: 100vh;
+  background-color: transparent;
 
   ${(props) =>
     props.$isMobile &&
@@ -24,6 +48,7 @@ const Container = styled.div<{ $isMobile?: boolean }>`
 
 function App() {
   const [mashups, setMashups] = useState<s.Mashup[]>(data);
+  const [analyserType, setAnalyserType] = useState<Tone.AnalyserType>("waveform");
   const [mashupIndex, setMashupIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
@@ -45,20 +70,46 @@ function App() {
     fetchMashups();
   }, []);
 
+  const analyser = useMemo(() => new Tone.Analyser("waveform", 256), []);
+
+  useUpdate(() => {
+    analyser.type = analyserType;
+  }, [analyserType]);
+
   return isLoading ? (
     <>Loading...</>
   ) : (
     <>
-      <Container $isMobile={isMobile}>
-        <TrackController track={mashups[mashupIndex].track1} />
-        <MashupController
-          mashup={mashups[mashupIndex].mashedTrack}
-          numMashups={mashups.length}
-          mashupIndex={mashupIndex}
-          setMashupIndex={setMashupIndex}
-        />
-        <TrackController track={mashups[mashupIndex].track2} />
-      </Container>
+      <ScrollingImages
+        leftUrl={mashups[mashupIndex].track1.coverUrl}
+        rightUrl={mashups[mashupIndex].track2.coverUrl}
+      />
+      {analyserType === "fft" ? (
+        <Spectrogram analyser={analyser} />
+      ) : (
+        <Oscilloscope analyser={analyser} />
+      )}
+      <Body>
+        <NavBar>
+          <Switch
+            description="visualize waveform"
+            enabledDescription="visualize frequencies"
+            icon={PiWaveform}
+            enabledIcon={PiWaveSine}
+            onClick={(isEnabled) => setAnalyserType(!isEnabled ? "waveform" : "fft")}
+          />
+        </NavBar>
+        <Container $isMobile={isMobile}>
+          <TrackController track={mashups[mashupIndex].track1} analyser={analyser} />
+          <MashupController
+            mashup={mashups[mashupIndex].mashedTrack}
+            numMashups={mashups.length}
+            mashupIndex={mashupIndex}
+            setMashupIndex={setMashupIndex}
+          />
+          <TrackController track={mashups[mashupIndex].track2} analyser={analyser} />
+        </Container>
+      </Body>
     </>
   );
 }

@@ -1,6 +1,6 @@
 :root {
   --bg-color: #101010;
-  --bg-color-light: #242424;
+  --bg-color-light: rgba(41, 41, 41, 0.7);
   --white: white;
   --par-color: #9a9a9a;
   --pink: #ff59ec;
@@ -13,7 +13,7 @@ body {
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background-color: var(--bg-color);
+  background-color: transparent;
   font-family: Arial, Helvetica, sans-serif;
 }
 

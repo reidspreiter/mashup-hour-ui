@@ -25,12 +25,16 @@ export class Player {
   private blob: Blob;
   private player: Tone.Player;
 
-  constructor(title: string, preview: string) {
+  private analyser: Tone.Analyser;
+
+  constructor(title: string, preview: string, analyser: Tone.Analyser) {
     const { blob, previewUrl } = getBlobAndPreviewUrl(preview);
     this.blob = blob;
     this.previewUrl = previewUrl;
     this.title = title;
     this.player = new Tone.Player(previewUrl).toDestination();
+    this.analyser = analyser;
+    this.player.connect(this.analyser);
     this.player.loop = true;
   }
 
@@ -48,7 +52,12 @@ export class Player {
     this.previewUrl = previewUrl;
     this.title = title;
     this.player = new Tone.Player(previewUrl).toDestination();
+    this.player.connect(this.analyser);
     this.player.loop = true;
+  };
+
+  public connect = (destination: Tone.InputNode, outputNum?: number, inputNum?: number) => {
+    this.player.connect(destination, outputNum, inputNum);
   };
 
   public togglePlayer = (isPlaying: boolean) => {

@@ -47,7 +47,7 @@ const Container = styled.div<{ $isMobile?: boolean }>`
 `;
 
 function App() {
-  const [mashups, setMashups] = useState<s.Mashup[]>(data);
+  const [mashups, setMashups] = useState<s.Mashup[]>([]);
   const [analyserType, setAnalyserType] = useState<Tone.AnalyserType>("waveform");
   const [mashupIndex, setMashupIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,7 +59,7 @@ function App() {
       // const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/retrieve-assets`);
       // const data = await response.json();
       // const _mashups = s.MashupSchema.array().parse(data);
-      // setMashups(_mashups);
+      setMashups(data);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching data", error);

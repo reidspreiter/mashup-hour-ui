@@ -5,14 +5,14 @@ import MashupSelector from "./MashupSelector";
 
 interface Props {
   mashup: s.MashedTrack;
-  numMashups: number;
+  mashupTitles: string[];
   mashupIndex: number;
   setMashupIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const MashupController: React.FC<Props> = ({
   mashup,
-  numMashups,
+  mashupTitles,
   mashupIndex,
   setMashupIndex,
 }: Props) => {
@@ -26,7 +26,7 @@ const MashupController: React.FC<Props> = ({
         coverUrl=""
       />
       <MashupSelector
-        numMashups={numMashups}
+        mashupTitles={mashupTitles}
         mashupIndex={mashupIndex}
         setMashupIndex={setMashupIndex}
       />

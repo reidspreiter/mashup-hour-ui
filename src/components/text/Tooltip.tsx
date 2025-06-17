@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 interface Props {
   children: React.ReactNode;
-  text: string;
+  text?: string;
   disabled?: boolean;
 }
 
@@ -60,7 +60,7 @@ const Tooltip: React.FC<Props> = ({ children, text, disabled = false }: Props) =
   return (
     <TooltipWrapper onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onMouseLeave}>
       {children}
-      {showTooltip && !disabled && <TooltipText>{text}</TooltipText>}
+      {showTooltip && !disabled && text && <TooltipText>{text}</TooltipText>}
     </TooltipWrapper>
   );
 };

@@ -1,4 +1,5 @@
-import { useRef, useState, useLayoutEffect } from "react";
+import { useRef, useState, useLayoutEffect, useContext } from "react";
+import { PreferencesContext } from "../../contexts";
 import styled from "styled-components";
 
 interface Props {
@@ -16,11 +17,7 @@ const TooltipWrapper = styled.div`
 
 const TooltipText = styled.div<{ $orientation: string }>`
   position: absolute;
-  ${({ $orientation }) => 
-    $orientation === "bottom" 
-      ? `top: 100%;` 
-      : `bottom: 100%;`
-  }
+  ${({ $orientation }) => ($orientation === "bottom" ? `top: 100%;` : `bottom: 100%;`)}
   left: 50%;
   transform: translateX(-50%);
   z-index: 0;
@@ -51,11 +48,12 @@ const Tooltip: React.FC<Props> = ({ children, text, disabled = false }: Props) =
   const timeoutRef = useRef<number | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const { preferences } = useContext(PreferencesContext);
   const translateMargin = 24;
 
   const onMouseEnter = () => {
     timeoutRef.current = window.setTimeout(() => {
-      setShowTooltip(true);
+      setShowTooltip(true && !preferences.disableTooltips);
     }, 800);
   };
 
@@ -71,7 +69,13 @@ const Tooltip: React.FC<Props> = ({ children, text, disabled = false }: Props) =
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       const wrapperRect = tooltipRef.current.getBoundingClientRect();
 
-      setOrientation(orientation === "bottom" ? "bottom" : wrapperRect.top - tooltipRect.height < 0 ? "bottom" : "top");
+      setOrientation(
+        orientation === "bottom"
+          ? "bottom"
+          : wrapperRect.top - tooltipRect.height < 0
+            ? "bottom"
+            : "top"
+      );
 
       if (tooltipRect.left < 0) {
         tooltipRef.current.style.transform = `translateX(${tooltipRect.left + translateMargin}px)`;
@@ -81,12 +85,21 @@ const Tooltip: React.FC<Props> = ({ children, text, disabled = false }: Props) =
         tooltipRef.current.style.transform = "translateX(-50%)";
       }
     }
-  }, [showTooltip])
+  }, [showTooltip]);
 
   return (
-    <TooltipWrapper ref={wrapperRef} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onMouseLeave}>
+    <TooltipWrapper
+      ref={wrapperRef}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onClick={onMouseLeave}
+    >
       {children}
-      {showTooltip && !disabled && text && <TooltipText ref={tooltipRef} $orientation={orientation}>{text}</TooltipText>}
+      {showTooltip && !disabled && text && (
+        <TooltipText ref={tooltipRef} $orientation={orientation}>
+          {text}
+        </TooltipText>
+      )}
     </TooltipWrapper>
   );
 };

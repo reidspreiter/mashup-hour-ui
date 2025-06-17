@@ -22,11 +22,11 @@ export const BaseIconButton = styled.button`
 
 const IconButton: React.FC<Props> = ({ description, icon, onClick }: Props) => {
   return (
-    <Tooltip text={description}>
-      <BaseIconButton onClick={() => onClick()}>
+    <BaseIconButton onClick={() => onClick()}>
+      <Tooltip text={description}>
         <Icon as={icon} />
-      </BaseIconButton>
-    </Tooltip>
+      </Tooltip>
+    </BaseIconButton>
   );
 };
 

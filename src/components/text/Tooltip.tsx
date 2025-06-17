@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useLayoutEffect } from "react";
 import styled from "styled-components";
 
 interface Props {
@@ -14,11 +14,16 @@ const TooltipWrapper = styled.div`
   height: 100%;
 `;
 
-const TooltipText = styled.div`
+const TooltipText = styled.div<{ $orientation: string }>`
   position: absolute;
-  bottom: 100%;
+  ${({ $orientation }) => 
+    $orientation === "bottom" 
+      ? `top: 100%;` 
+      : `bottom: 100%;`
+  }
   left: 50%;
   transform: translateX(-50%);
+  z-index: 0;
   background-color: var(--bg-color);
   color: var(--white);
   border-radius: 4px;
@@ -42,7 +47,11 @@ const TooltipText = styled.div`
 
 const Tooltip: React.FC<Props> = ({ children, text, disabled = false }: Props) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [orientation, setOrientation] = useState<"top" | "bottom">("top");
   const timeoutRef = useRef<number | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const translateMargin = 24;
 
   const onMouseEnter = () => {
     timeoutRef.current = window.setTimeout(() => {
@@ -57,10 +66,27 @@ const Tooltip: React.FC<Props> = ({ children, text, disabled = false }: Props) =
     setShowTooltip(false);
   };
 
+  useLayoutEffect(() => {
+    if (showTooltip && tooltipRef.current && wrapperRef.current) {
+      const tooltipRect = tooltipRef.current.getBoundingClientRect();
+      const wrapperRect = tooltipRef.current.getBoundingClientRect();
+
+      setOrientation(orientation === "bottom" ? "bottom" : wrapperRect.top - tooltipRect.height < 0 ? "bottom" : "top");
+
+      if (tooltipRect.left < 0) {
+        tooltipRef.current.style.transform = `translateX(${tooltipRect.left + translateMargin}px)`;
+      } else if (tooltipRect.right > window.innerWidth) {
+        tooltipRef.current.style.transform = `translateX(calc(-50% + -${tooltipRect.right + translateMargin - window.innerWidth}px)`;
+      } else {
+        tooltipRef.current.style.transform = "translateX(-50%)";
+      }
+    }
+  }, [showTooltip])
+
   return (
-    <TooltipWrapper onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onMouseLeave}>
+    <TooltipWrapper ref={wrapperRef} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={onMouseLeave}>
       {children}
-      {showTooltip && !disabled && text && <TooltipText>{text}</TooltipText>}
+      {showTooltip && !disabled && text && <TooltipText ref={tooltipRef} $orientation={orientation}>{text}</TooltipText>}
     </TooltipWrapper>
   );
 };

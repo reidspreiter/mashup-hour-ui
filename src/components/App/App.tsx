@@ -71,6 +71,7 @@ function App() {
   }, []);
 
   const analyser = useMemo(() => new Tone.Analyser("waveform", 256), []);
+  const mashupTitles = useMemo(() => mashups.map((mashup) => mashup.mashedTrack.title), [mashups]);
 
   useUpdate(() => {
     analyser.type = analyserType;
@@ -102,8 +103,8 @@ function App() {
         <Container $isMobile={isMobile}>
           <TrackController track={mashups[mashupIndex].track1} analyser={analyser} />
           <MashupController
+            mashupTitles={mashupTitles}
             mashup={mashups[mashupIndex].mashedTrack}
-            numMashups={mashups.length}
             mashupIndex={mashupIndex}
             setMashupIndex={setMashupIndex}
           />

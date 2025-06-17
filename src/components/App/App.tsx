@@ -8,8 +8,9 @@ import TrackController from "../track";
 import { data } from "../../../sampleData";
 import * as Tone from "tone";
 import { Switch } from "../controls/switches";
+import { PreferencesContext, defaultPreferences } from "../../contexts";
 import { Spectrogram, ScrollingImages, Oscilloscope } from "../backgrounds";
-import { PiWaveform, PiWaveSine } from "react-icons/pi";
+import { PiWaveform, PiWaveSine, PiChatCentered, PiChatCenteredDots } from "react-icons/pi";
 
 const Body = styled.div`
   display: flex;
@@ -51,6 +52,7 @@ function App() {
   const [analyserType, setAnalyserType] = useState<Tone.AnalyserType>("waveform");
   const [mashupIndex, setMashupIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [preferences, setPreferences] = useState(defaultPreferences);
   const isMobile = useIsMobile();
 
   const fetchMashups = async () => {
@@ -80,7 +82,7 @@ function App() {
   return isLoading ? (
     <>Loading...</>
   ) : (
-    <>
+    <PreferencesContext.Provider value={{ preferences, setPreferences }}>
       <ScrollingImages
         leftUrl={mashups[mashupIndex].track1.coverUrl}
         rightUrl={mashups[mashupIndex].track2.coverUrl}
@@ -92,6 +94,18 @@ function App() {
       )}
       <Body>
         <NavBar>
+          <Switch
+            description="show tooltips"
+            enabledDescription="disable tooltips"
+            icon={PiChatCenteredDots}
+            enabledIcon={PiChatCentered}
+            onClick={(isEnabled) => {
+              setPreferences((prev) => ({
+                ...prev,
+                disableTooltips: isEnabled,
+              }));
+            }}
+          />
           <Switch
             description="visualize waveform"
             enabledDescription="visualize frequencies"
@@ -111,7 +125,7 @@ function App() {
           <TrackController track={mashups[mashupIndex].track2} analyser={analyser} />
         </Container>
       </Body>
-    </>
+    </PreferencesContext.Provider>
   );
 }
 

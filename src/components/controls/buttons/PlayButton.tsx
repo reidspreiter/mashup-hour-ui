@@ -28,6 +28,7 @@ const PlayButton: React.FC<Props> = ({ player, title, onClick }: Props) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
+    setIsPlaying(false);
     player.onStop = () => setIsPlaying(false);
   }, [player, title]);
 

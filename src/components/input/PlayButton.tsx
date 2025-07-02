@@ -1,8 +1,8 @@
 import { BaseIconButton } from "./IconButton";
 import { useEffect, useState } from "react";
-import { Player } from "../../../audio";
-import { Tooltip } from "../../text";
-import { Icon } from "../../text";
+import { Player } from "../../audio";
+import { Tooltip } from "../text";
+import { Icon } from "../text";
 import styled from "styled-components";
 import * as Tone from "tone";
 import { IoPauseCircleSharp, IoPlayCircleSharp } from "react-icons/io5";

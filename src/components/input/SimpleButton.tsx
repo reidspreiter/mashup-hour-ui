@@ -1,4 +1,4 @@
-import { Tooltip } from "../../text";
+import { Tooltip } from "../text";
 import styled from "styled-components";
 
 interface Props {

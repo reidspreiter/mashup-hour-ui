@@ -1,7 +1,6 @@
 import { Player } from "../../audio";
-import { PlayButton } from "../controls/buttons";
+import { PlayButton } from "../input";
 import { Casing } from "../containers";
-import * as s from "../../schemas";
 import { CenteredRegion } from "../containers";
 
 interface Props {

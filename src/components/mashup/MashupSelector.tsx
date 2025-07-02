@@ -1,6 +1,6 @@
 import { CenteredRegion } from "../containers";
-import { IconButton } from "../controls/buttons";
-import { Carousel } from "../controls/buttons";
+import { IconButton } from "../input";
+import { Carousel } from "../input";
 import { CountdownTimer } from "../text";
 import { IoIosSkipBackward, IoIosSkipForward } from "react-icons/io";
 

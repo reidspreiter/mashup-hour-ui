@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { SubHeader } from "./SubHeader";
+import { SubHeader } from "./Text";
 import Tooltip from "./Tooltip";
 
 interface Props {

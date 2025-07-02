@@ -1,11 +1,15 @@
 :root {
-  --bg-color: #101010;
-  --bg-color-light: rgba(41, 41, 41, 0.7);
+  --bg-color: #000000;
+  --surface-10: rgba(30, 30, 30, 0.7);
+  --surface-10-opaque: #1e1e1e;
+  --surface-20: #353535;
+  --surface-30: #4e4e4e;
+  --par-color: #858585;
   --white: white;
-  --par-color: #9a9a9a;
-  --pink: #ff59ec;
+  --pink: #f16eb0;
   --scale-increase: 1.2;
   --transition-speed: 0.2s;
+  color-scheme: dark;
 }
 
 html,

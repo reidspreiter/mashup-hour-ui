@@ -22,3 +22,10 @@ export const objsEqual = (obj1: any, obj2: any): boolean => {
 
   return true;
 };
+
+export const openLinkInNewTab = (url: string) => {
+  const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+  if (newWindow) {
+    newWindow.opener = null;
+  }
+}

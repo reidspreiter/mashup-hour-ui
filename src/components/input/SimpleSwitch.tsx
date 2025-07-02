@@ -1,4 +1,4 @@
-import { SimpleButton } from "../buttons";
+import SimpleButton from "./SimpleButton";
 import { useState } from "react";
 
 interface Props {

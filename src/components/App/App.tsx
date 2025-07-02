@@ -7,29 +7,21 @@ import MashupController from "../mashup";
 import TrackController from "../track";
 import { data } from "../../../sampleData";
 import * as Tone from "tone";
-import { Switch } from "../controls/switches";
 import { PreferencesContext, defaultPreferences } from "../../contexts";
-import { Spectrogram, ScrollingImages, Oscilloscope } from "../backgrounds";
-import { PiWaveform, PiWaveSine, PiChatCentered, PiChatCenteredDots } from "react-icons/pi";
+import { NavBar } from "../navbar";
+import { Background } from "../background";
+import {
+  type VisualizerType,
+  type VisualizerColorSource,
+  type VisualizerDynamicColor,
+  type AnalyzerResolution,
+  VISUALIZER_DEFAULTS,
+} from "../background";
 
 const Body = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
-`;
-
-const NavBar = styled.div`
-  width: 100%;
-  height: 55px;
-  background-color: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: right;
-  padding: 10px;
-  z-index: 5;
-  position: relative;
-  box-sizing: border-box;
-  margin: 0px;
 `;
 
 const Container = styled.div<{ $isMobile?: boolean }>`
@@ -49,11 +41,50 @@ const Container = styled.div<{ $isMobile?: boolean }>`
 
 function App() {
   const [mashups, setMashups] = useState<s.Mashup[]>([]);
-  const [analyserType, setAnalyserType] = useState<Tone.AnalyserType>("waveform");
   const [mashupIndex, setMashupIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [preferences, setPreferences] = useState(defaultPreferences);
   const isMobile = useIsMobile();
+
+  // visualizer
+  const [visualizerType, setVisualizerType] = useState<VisualizerType>(
+    VISUALIZER_DEFAULTS.visualizerType
+  );
+  const [visualizerColorSource, setVisualizerColorSource] = useState<VisualizerColorSource>(
+    VISUALIZER_DEFAULTS.visualizerColorSource
+  );
+  const [visualizerSolidColor, setVisualizerSolidColor] = useState(
+    VISUALIZER_DEFAULTS.visualizerSolidColor
+  );
+  const [visualizerDynamicColor, setVisualizerDynamicColor] = useState<VisualizerDynamicColor>(
+    VISUALIZER_DEFAULTS.visualizerDynamicColor
+  );
+  const [visualizerLineThickness, setVisualizerLineThickness] = useState(
+    VISUALIZER_DEFAULTS.visualizerLineThickness
+  );
+  const [smoothVisualizer, setSmoothVisualizer] = useState(VISUALIZER_DEFAULTS.smoothVisualizer);
+  const [analyzerType, setAnalyzerType] = useState<Tone.AnalyserType>(
+    VISUALIZER_DEFAULTS.analyzerType
+  );
+  const [analyzerResolution, setAnalyzerResolution] = useState<AnalyzerResolution>(
+    VISUALIZER_DEFAULTS.analyzerResolution
+  );
+  const [frequencyGateX, setFrequencyGateX] = useState(VISUALIZER_DEFAULTS.frequencyGateX);
+  const [frequencyGateY, setFrequencyGateY] = useState(VISUALIZER_DEFAULTS.frequencyGateY);
+  const [frequencyGateTolerance, setFrequencyGateTolerance] = useState(
+    VISUALIZER_DEFAULTS.frequencyGateTolerance
+  );
+  const [frequencyGateInverted, setFrequencyGateInverted] = useState(
+    VISUALIZER_DEFAULTS.frequencyGateInverted
+  );
+  const [frequencyGateSustained, setFrequencyGateSustained] = useState(
+    VISUALIZER_DEFAULTS.frequencyGateSustained
+  );
+  const [viewGateVisual, setViewGateVisual] = useState(VISUALIZER_DEFAULTS.viewGateVisual);
+  const [visualizerSpeed, setVisualizerSpeed] = useState(VISUALIZER_DEFAULTS.visualizerSpeed);
+  const [hideMashupControls, setHideMashupControls] = useState(
+    VISUALIZER_DEFAULTS.hideMashupControls
+  );
 
   const fetchMashups = async () => {
     try {
@@ -72,57 +103,82 @@ function App() {
     fetchMashups();
   }, []);
 
-  const analyser = useMemo(() => new Tone.Analyser("waveform", 256), []);
+  const analyzer = useMemo(() => new Tone.Analyser("fft", analyzerResolution), []);
   const mashupTitles = useMemo(() => mashups.map((mashup) => mashup.mashedTrack.title), [mashups]);
 
   useUpdate(() => {
-    analyser.type = analyserType;
-  }, [analyserType]);
+    analyzer.type = analyzerType;
+  }, [analyzerType]);
+
+  useUpdate(() => {
+    analyzer.size = analyzerResolution;
+  }, [analyzerResolution]);
 
   return isLoading ? (
     <>Loading...</>
   ) : (
     <PreferencesContext.Provider value={{ preferences, setPreferences }}>
-      <ScrollingImages
-        leftUrl={mashups[mashupIndex].track1.coverUrl}
-        rightUrl={mashups[mashupIndex].track2.coverUrl}
+      <Background
+        analyzer={analyzer}
+        leftImageUrl={mashups[mashupIndex].track1.coverUrl}
+        rightImageUrl={mashups[mashupIndex].track2.coverUrl}
+        visualizerType={visualizerType}
+        visualizerColorSource={visualizerColorSource}
+        visualizerSolidColor={visualizerSolidColor}
+        visualizerDynamicColor={visualizerDynamicColor}
+        visualizerLineThickness={visualizerLineThickness}
+        frequencyGateX={frequencyGateX}
+        frequencyGateY={frequencyGateY}
+        frequencyGateTolerance={frequencyGateTolerance}
+        frequencyGateInverted={frequencyGateInverted}
+        frequencyGateSustained={frequencyGateSustained}
+        viewGateVisual={viewGateVisual}
+        smoothVisualizer={smoothVisualizer}
+        visualizerSpeed={visualizerSpeed}
       />
-      {analyserType === "fft" ? (
-        <Spectrogram analyser={analyser} />
-      ) : (
-        <Oscilloscope analyser={analyser} />
-      )}
       <Body>
-        <NavBar>
-          <Switch
-            description="show tooltips"
-            enabledDescription="disable tooltips"
-            icon={PiChatCenteredDots}
-            enabledIcon={PiChatCentered}
-            onClick={(isEnabled) => {
-              setPreferences((prev) => ({
-                ...prev,
-                disableTooltips: isEnabled,
-              }));
-            }}
-          />
-          <Switch
-            description="visualize waveform"
-            enabledDescription="visualize frequencies"
-            icon={PiWaveform}
-            enabledIcon={PiWaveSine}
-            onClick={(isEnabled) => setAnalyserType(!isEnabled ? "waveform" : "fft")}
-          />
-        </NavBar>
-        <Container $isMobile={isMobile}>
-          <TrackController track={mashups[mashupIndex].track1} analyser={analyser} />
+        <NavBar
+          visualizerType={visualizerType}
+          setVisualizerType={setVisualizerType}
+          visualizerColorSource={visualizerColorSource}
+          setVisualizerColorSource={setVisualizerColorSource}
+          visualizerSolidColor={visualizerSolidColor}
+          setVisualizerSolidColor={setVisualizerSolidColor}
+          visualizerDynamicColor={visualizerDynamicColor}
+          setVisualizerDynamicColor={setVisualizerDynamicColor}
+          visualizerLineThickness={visualizerLineThickness}
+          setVisualizerLineThickness={setVisualizerLineThickness}
+          analyzerType={analyzerType}
+          setAnalyzerType={setAnalyzerType}
+          analyzerResolution={analyzerResolution}
+          setAnalyzerResolution={setAnalyzerResolution}
+          frequencyGateX={frequencyGateX}
+          setFrequencyGateX={setFrequencyGateX}
+          frequencyGateY={frequencyGateY}
+          setFrequencyGateY={setFrequencyGateY}
+          frequencyGateTolerance={frequencyGateTolerance}
+          setFrequencyGateTolerance={setFrequencyGateTolerance}
+          frequencyGateInverted={frequencyGateInverted}
+          setFrequencyGateInverted={setFrequencyGateInverted}
+          frequencyGateSustained={frequencyGateSustained}
+          setFrequencyGateSustained={setFrequencyGateSustained}
+          viewGateVisual={viewGateVisual}
+          setViewGateVisual={setViewGateVisual}
+          smoothVisualizer={smoothVisualizer}
+          setSmoothVisualizer={setSmoothVisualizer}
+          visualizerSpeed={visualizerSpeed}
+          setVisualizerSpeed={setVisualizerSpeed}
+          setHideMashupControls={setHideMashupControls}
+        />
+        <Container $isMobile={isMobile} style={{visibility: hideMashupControls ? "hidden" : "visible"}}>
+          <TrackController track={mashups[mashupIndex].track1} analyser={analyzer} />
           <MashupController
             mashupTitles={mashupTitles}
             mashup={mashups[mashupIndex].mashedTrack}
             mashupIndex={mashupIndex}
             setMashupIndex={setMashupIndex}
           />
-          <TrackController track={mashups[mashupIndex].track2} analyser={analyser} />
+          <TrackController track={mashups[mashupIndex].track2} analyser={analyzer} />
         </Container>
       </Body>
     </PreferencesContext.Provider>

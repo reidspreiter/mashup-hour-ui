@@ -15,7 +15,6 @@ const CasingContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   padding: 4px 0px;
-  border: 2px solid var(--bg-color);
   border-radius: 10px;
 `;
 

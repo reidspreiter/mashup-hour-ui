@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import { Background } from "./Background";
+import { BackgroundDiv } from "./containers";
 
 interface Props {
   leftUrl: string;
@@ -15,7 +15,7 @@ const scrollDown = keyframes`
   }
 `;
 
-const Wrapper = styled(Background)`
+const Wrapper = styled(BackgroundDiv)`
   z-index: -5;
   display: flex;
   height: 200vh;

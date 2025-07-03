@@ -17,9 +17,10 @@ import {
   Switch,
   InputGroup,
   Checkbox,
+  IconButton,
 } from "../input";
 import type { RangeMode } from "../input";
-import { PiChatCenteredDots, PiChatCentered, PiWaveform, PiEye, PiEyeClosed } from "react-icons/pi";
+import { PiChatCenteredDots, PiChatCentered, PiWaveform, PiEye, PiEyeClosed, PiCodeSimple, PiBug, PiLightbulbFilament } from "react-icons/pi";
 import {
   VISUALIZER_DYNAMIC_COLORS,
   VISUALIZER_TYPES,
@@ -32,6 +33,7 @@ import type {
   VisualizerDynamicColor,
   AnalyzerResolution,
 } from "../background";
+import { openLinkInNewTab } from "../../util";
 
 interface Props {
   visualizerType: VisualizerType;
@@ -73,7 +75,7 @@ const NavBarStyled = styled.div`
   background-color: transparent;
   display: flex;
   align-items: center;
-  justify-content: right;
+  justify-content: space-between;
   padding: 10px;
   z-index: 5;
   position: relative;
@@ -180,31 +182,38 @@ const NavBar: React.FC<Props> = ({
 
   return (
     <NavBarStyled>
-      <Switch
-        description="hide tooltips"
-        icon={PiChatCenteredDots}
-        enabledIcon={PiChatCentered}
-        startEnabled={preferences.disableTooltips}
-        onClick={(isEnabled) => {
-          setPreferences((prev) => ({
-            ...prev,
-            disableTooltips: isEnabled,
-          }));
-        }}
-      />
-      <Switch
-        description="hide mashup controls"
-        icon={PiEye}
-        enabledIcon={PiEyeClosed}
-        startEnabled={false}
-        onClick={setHideMashupControls}
-      />
-      <Switch
-        ref={visualizerCustomizationButtonRef}
-        description="customize visualizer"
-        icon={PiWaveform}
-        onClick={(isEnabled) => setShowVisualizerCustomization(isEnabled)}
-      />
+      <div style={{display: "flex", margin: "0px", padding: "0px", height: "100%"}}>
+        <IconButton description="visit GitHub repo" icon={PiCodeSimple} onClick={() => openLinkInNewTab("https://github.com/reidspreiter/mashup-hour-ui")}/>
+        <IconButton description="report a bug" icon={PiBug} onClick={() => openLinkInNewTab("https://github.com/reidspreiter/mashup-hour-ui/issues/new?template=bug_report.md")}/>
+        <IconButton description="request a feature" icon={PiLightbulbFilament} onClick={() => openLinkInNewTab("https://github.com/reidspreiter/mashup-hour-ui/issues/new?template=feature_request.md")}/>
+      </div>
+      <div style={{display: "flex", margin: "0px", padding: "0px", height: "100%"}}>
+        <Switch
+          description="hide tooltips"
+          icon={PiChatCenteredDots}
+          enabledIcon={PiChatCentered}
+          startEnabled={preferences.disableTooltips}
+          onClick={(isEnabled) => {
+            setPreferences((prev) => ({
+              ...prev,
+              disableTooltips: isEnabled,
+            }));
+          }}
+        />
+        <Switch
+          description="hide mashup controls"
+          icon={PiEye}
+          enabledIcon={PiEyeClosed}
+          startEnabled={false}
+          onClick={setHideMashupControls}
+        />
+        <Switch
+          ref={visualizerCustomizationButtonRef}
+          description="customize visualizer"
+          icon={PiWaveform}
+          onClick={(isEnabled) => setShowVisualizerCustomization(isEnabled)}
+        />
+      </div>
       <Popper open={showVisualizerCustomization} anchor={visualizerCustomizationButtonRef}>
         <VerticalRegion>
           <Header>Visualizer</Header>

@@ -1,10 +1,33 @@
 import { VerticalRegion, Scroll } from "../containers";
 import { Header } from "../text";
-import { InputBox, Select, Checkbox, RadioButton, RadioGroup, Slider, InputGroup, Knob, Color } from "../input";
+import {
+  InputBox,
+  Select,
+  Checkbox,
+  RadioButton,
+  RadioGroup,
+  Slider,
+  InputGroup,
+  Knob,
+  Color,
+  IconButton,
+} from "../input";
 import type { RangeMode } from "../input";
 import { useCallback, useState, useMemo } from "react";
-import { useVisualizerSettingsStore, VISUALIZER_DEFAULTS, VISUALIZER_TYPES, VISUALIZER_DYNAMIC_COLORS, ANALYZER_RESOLUTIONS } from "../../stores/visualizer";
-import type { VisualizerType, VisualizerColorSource, VisualizerDynamicColor, AnalyzerResolution } from "../../stores/visualizer";
+import {
+  useVisualizerSettingsStore,
+  VISUALIZER_DEFAULTS,
+  VISUALIZER_TYPES,
+  VISUALIZER_DYNAMIC_COLORS,
+  ANALYZER_RESOLUTIONS,
+} from "../../stores/visualizer";
+import { PiCopy, PiClipboard } from "react-icons/pi";
+import type {
+  VisualizerType,
+  VisualizerColorSource,
+  VisualizerDynamicColor,
+  AnalyzerResolution,
+} from "../../stores/visualizer";
 import { useShallow } from "zustand/shallow";
 
 const VisualizerSettingsMenu = () => {
@@ -39,38 +62,44 @@ const VisualizerSettingsMenu = () => {
     setSmoothVisualizer,
     visualizerSpeed,
     setVisualizerSpeed,
-  } = useVisualizerSettingsStore(useShallow((state) => ({
-    visualizerType: state.visualizerType,
-    setVisualizerType: state.setVisualizerType,
-    visualizerColorSource: state.visualizerColorSource,
-    setVisualizerColorSource: state.setVisualizerColorSource,
-    visualizerSolidColor: state.visualizerSolidColor,
-    setVisualizerSolidColor: state.setVisualizerSolidColor,
-    visualizerDynamicColor: state.visualizerDynamicColor,
-    setVisualizerDynamicColor: state.setVisualizerDynamicColor,
-    visualizerLineThickness: state.visualizerLineThickness,
-    setVisualizerLineThickness: state.setVisualizerLineThickness,
-    analyzerType: state.analyzerType,
-    setAnalyzerType: state.setAnalyzerType,
-    analyzerResolution: state.analyzerResolution,
-    setAnalyzerResolution: state.setAnalyzerResolution,
-    frequencyGateX: state.frequencyGateX,
-    setFrequencyGateX: state.setFrequencyGateX,
-    frequencyGateY: state.frequencyGateY,
-    setFrequencyGateY: state.setFrequencyGateY,
-    frequencyGateTolerance: state.frequencyGateTolerance,
-    setFrequencyGateTolerance: state.setFrequencyGateTolerance,
-    frequencyGateInverted: state.frequencyGateInverted,
-    setFrequencyGateInverted: state.setFrequencyGateInverted,
-    frequencyGateSustained: state.frequencyGateSustained,
-    setFrequencyGateSustained: state.setFrequencyGateSustained,
-    viewGateVisual: state.viewGateVisual,
-    setViewGateVisual: state.setViewGateVisual,
-    smoothVisualizer: state.smoothVisualizer,
-    setSmoothVisualizer: state.setSmoothVisualizer,
-    visualizerSpeed: state.visualizerSpeed,
-    setVisualizerSpeed: state.setVisualizerSpeed,
-  })));
+    getUrlSnippet,
+    setFromUrlSnippet,
+  } = useVisualizerSettingsStore(
+    useShallow((state) => ({
+      visualizerType: state.visualizerType,
+      setVisualizerType: state.setVisualizerType,
+      visualizerColorSource: state.visualizerColorSource,
+      setVisualizerColorSource: state.setVisualizerColorSource,
+      visualizerSolidColor: state.visualizerSolidColor,
+      setVisualizerSolidColor: state.setVisualizerSolidColor,
+      visualizerDynamicColor: state.visualizerDynamicColor,
+      setVisualizerDynamicColor: state.setVisualizerDynamicColor,
+      visualizerLineThickness: state.visualizerLineThickness,
+      setVisualizerLineThickness: state.setVisualizerLineThickness,
+      analyzerType: state.analyzerType,
+      setAnalyzerType: state.setAnalyzerType,
+      analyzerResolution: state.analyzerResolution,
+      setAnalyzerResolution: state.setAnalyzerResolution,
+      frequencyGateX: state.frequencyGateX,
+      setFrequencyGateX: state.setFrequencyGateX,
+      frequencyGateY: state.frequencyGateY,
+      setFrequencyGateY: state.setFrequencyGateY,
+      frequencyGateTolerance: state.frequencyGateTolerance,
+      setFrequencyGateTolerance: state.setFrequencyGateTolerance,
+      frequencyGateInverted: state.frequencyGateInverted,
+      setFrequencyGateInverted: state.setFrequencyGateInverted,
+      frequencyGateSustained: state.frequencyGateSustained,
+      setFrequencyGateSustained: state.setFrequencyGateSustained,
+      viewGateVisual: state.viewGateVisual,
+      setViewGateVisual: state.setViewGateVisual,
+      smoothVisualizer: state.smoothVisualizer,
+      setSmoothVisualizer: state.setSmoothVisualizer,
+      visualizerSpeed: state.visualizerSpeed,
+      setVisualizerSpeed: state.setVisualizerSpeed,
+      getUrlSnippet: state.getUrlSnippet,
+      setFromUrlSnippet: state.setFromUrlSnippet,
+    }))
+  );
   const [prevViewVisual, setPrevViewVisual] = useState<boolean | null>(false);
 
   const handleTemporaryViewVisual = useCallback(
@@ -134,7 +163,27 @@ const VisualizerSettingsMenu = () => {
 
   return (
     <VerticalRegion>
-      <Header>Visualizer</Header>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Header>Visualizer</Header>
+        <div style={{ display: "flex", marginBottom: "auto", gap: "4px" }}>
+          <IconButton
+            icon={PiCopy}
+            description="copy visualizer settings"
+            onClick={async () => {
+              const snippet = getUrlSnippet();
+              await navigator.clipboard.writeText(snippet);
+            }}
+          />
+          <IconButton
+            icon={PiClipboard}
+            description="paste visualizer settings"
+            onClick={async () => {
+              const snippet = await navigator.clipboard.readText();
+              setFromUrlSnippet(snippet);
+            }}
+          />
+        </div>
+      </div>
       <Scroll
         style={{
           maxHeight: "80vh",
@@ -315,7 +364,7 @@ const VisualizerSettingsMenu = () => {
         </InputBox>
       </Scroll>
     </VerticalRegion>
-  )
-}
+  );
+};
 
-export default VisualizerSettingsMenu
+export default VisualizerSettingsMenu;

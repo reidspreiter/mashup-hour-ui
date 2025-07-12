@@ -14,7 +14,7 @@ interface Props {
   rightImageUrl: string;
 }
 
-export const Background: React.FC<Props> = ({analyzer, leftImageUrl, rightImageUrl}) => {
+export const Background: React.FC<Props> = ({ analyzer, leftImageUrl, rightImageUrl }) => {
   const {
     visualizerType,
     visualizerColorSource,
@@ -29,21 +29,23 @@ export const Background: React.FC<Props> = ({analyzer, leftImageUrl, rightImageU
     viewGateVisual,
     smoothVisualizer,
     visualizerSpeed,
-  } = useVisualizerSettingsStore(useShallow((state) => ({
-    visualizerType: state.visualizerType,
-    visualizerColorSource: state.visualizerColorSource,
-    visualizerSolidColor: state.visualizerSolidColor,
-    visualizerDynamicColor: state.visualizerDynamicColor,
-    visualizerLineThickness: state.visualizerLineThickness,
-    frequencyGateX: state.frequencyGateX,
-    frequencyGateY: state.frequencyGateY,
-    frequencyGateTolerance: state.frequencyGateTolerance,
-    frequencyGateInverted: state.frequencyGateInverted,
-    frequencyGateSustained: state.frequencyGateSustained,
-    viewGateVisual: state.viewGateVisual,
-    smoothVisualizer: state.smoothVisualizer,
-    visualizerSpeed: state.visualizerSpeed,
-  })));
+  } = useVisualizerSettingsStore(
+    useShallow((state) => ({
+      visualizerType: state.visualizerType,
+      visualizerColorSource: state.visualizerColorSource,
+      visualizerSolidColor: state.visualizerSolidColor,
+      visualizerDynamicColor: state.visualizerDynamicColor,
+      visualizerLineThickness: state.visualizerLineThickness,
+      frequencyGateX: state.frequencyGateX,
+      frequencyGateY: state.frequencyGateY,
+      frequencyGateTolerance: state.frequencyGateTolerance,
+      frequencyGateInverted: state.frequencyGateInverted,
+      frequencyGateSustained: state.frequencyGateSustained,
+      viewGateVisual: state.viewGateVisual,
+      smoothVisualizer: state.smoothVisualizer,
+      visualizerSpeed: state.visualizerSpeed,
+    }))
+  );
 
   const getVisualizer = () => {
     switch (visualizerType) {

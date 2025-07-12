@@ -1,7 +1,8 @@
 import type { AnalyserType } from "tone";
 import { NUM_INITIAL_MASHUPS } from "../constants";
 import { create } from "zustand";
-import type { SetterMethods, IndexDependentSettings } from "./common";
+import { generateUrlSnippet, applyUrlSnippet } from "./common";
+import type { SetterMethods, IndexDependentSettings, UrlAble } from "./common";
 
 export const VISUALIZER_TYPES = ["none", "spectrum analyzer", "oscilloscope", "ripple"] as const;
 export type VisualizerType = (typeof VISUALIZER_TYPES)[number];
@@ -24,14 +25,14 @@ export interface VisualizerSettings {
   smoothVisualizer: boolean;
   analyzerType: AnalyserType;
   analyzerResolution: AnalyzerResolution;
-  frequencyGateX: number,
-  frequencyGateY: number,
-  frequencyGateTolerance: number,
-  frequencyGateInverted: boolean,
-  frequencyGateSustained: boolean,
-  viewGateVisual: boolean,
-  visualizerSpeed: number,
-};
+  frequencyGateX: number;
+  frequencyGateY: number;
+  frequencyGateTolerance: number;
+  frequencyGateInverted: boolean;
+  frequencyGateSustained: boolean;
+  viewGateVisual: boolean;
+  visualizerSpeed: number;
+}
 
 export const VISUALIZER_DEFAULTS: VisualizerSettings = {
   visualizerType: "spectrum analyzer",
@@ -51,9 +52,41 @@ export const VISUALIZER_DEFAULTS: VisualizerSettings = {
   visualizerSpeed: 6,
 };
 
-interface VisualizerSettingsStore extends VisualizerSettings, IndexDependentSettings, SetterMethods<VisualizerSettings> {};
+const includedKeys = Object.keys(VISUALIZER_DEFAULTS) as (keyof VisualizerSettings)[];
 
-const items = Array.from({ length: NUM_INITIAL_MASHUPS }, () => ({ ...VISUALIZER_DEFAULTS }));;
+const stringConverters = {
+  visualizerType: {
+    "spectrum analyzer": "s",
+    none: "n",
+    oscilloscope: "o",
+    ripple: "r",
+  },
+  visualizerColorSource: {
+    solid: "s",
+    spectrum: "p",
+    album: "a",
+  },
+  visualizerDynamicColor: {
+    full: "f",
+    warm: "w",
+    cool: "c",
+    grayscale: "g",
+  },
+  analyzerType: {
+    fft: "f",
+    waveform: "w",
+  },
+};
+
+export const VISUALIZER_SETTINGS_SNIPPET_ID = "V";
+
+interface VisualizerSettingsStore
+  extends VisualizerSettings,
+    IndexDependentSettings,
+    SetterMethods<VisualizerSettings>,
+    UrlAble {}
+
+const items = Array.from({ length: NUM_INITIAL_MASHUPS }, () => ({ ...VISUALIZER_DEFAULTS }));
 let selectedIndex = 0;
 
 export const useVisualizerSettingsStore = create<VisualizerSettingsStore>((set, get) => ({
@@ -62,31 +95,31 @@ export const useVisualizerSettingsStore = create<VisualizerSettingsStore>((set, 
   visualizerColorSource: VISUALIZER_DEFAULTS.visualizerColorSource,
   setVisualizerColorSource: (value) => set({ visualizerColorSource: value }),
   visualizerSolidColor: VISUALIZER_DEFAULTS.visualizerSolidColor,
-  setVisualizerSolidColor: (value) => set({visualizerSolidColor: value}),
+  setVisualizerSolidColor: (value) => set({ visualizerSolidColor: value }),
   visualizerDynamicColor: VISUALIZER_DEFAULTS.visualizerDynamicColor,
-  setVisualizerDynamicColor: (value) => set({visualizerDynamicColor: value}),
+  setVisualizerDynamicColor: (value) => set({ visualizerDynamicColor: value }),
   visualizerLineThickness: VISUALIZER_DEFAULTS.visualizerLineThickness,
-  setVisualizerLineThickness: (value) => set({visualizerLineThickness: value}),
+  setVisualizerLineThickness: (value) => set({ visualizerLineThickness: value }),
   smoothVisualizer: VISUALIZER_DEFAULTS.smoothVisualizer,
-  setSmoothVisualizer: (value) => set({smoothVisualizer: value}),
+  setSmoothVisualizer: (value) => set({ smoothVisualizer: value }),
   analyzerType: VISUALIZER_DEFAULTS.analyzerType,
-  setAnalyzerType: (value) => set({analyzerType: value}),
+  setAnalyzerType: (value) => set({ analyzerType: value }),
   analyzerResolution: VISUALIZER_DEFAULTS.analyzerResolution,
-  setAnalyzerResolution: (value) => set({analyzerResolution: value}),
+  setAnalyzerResolution: (value) => set({ analyzerResolution: value }),
   frequencyGateX: VISUALIZER_DEFAULTS.frequencyGateX,
-  setFrequencyGateX: (value) => set({frequencyGateX: value}),
+  setFrequencyGateX: (value) => set({ frequencyGateX: value }),
   frequencyGateY: VISUALIZER_DEFAULTS.frequencyGateY,
-  setFrequencyGateY: (value) => set({frequencyGateY: value}),
+  setFrequencyGateY: (value) => set({ frequencyGateY: value }),
   frequencyGateTolerance: VISUALIZER_DEFAULTS.frequencyGateTolerance,
-  setFrequencyGateTolerance: (value) => set({frequencyGateTolerance: value}),
+  setFrequencyGateTolerance: (value) => set({ frequencyGateTolerance: value }),
   frequencyGateInverted: VISUALIZER_DEFAULTS.frequencyGateInverted,
-  setFrequencyGateInverted: (value) => set({frequencyGateInverted: value}),
+  setFrequencyGateInverted: (value) => set({ frequencyGateInverted: value }),
   frequencyGateSustained: VISUALIZER_DEFAULTS.frequencyGateSustained,
-  setFrequencyGateSustained: (value) => set({frequencyGateSustained: value}),
+  setFrequencyGateSustained: (value) => set({ frequencyGateSustained: value }),
   viewGateVisual: VISUALIZER_DEFAULTS.viewGateVisual,
-  setViewGateVisual: (value) => set({viewGateVisual: value}),
+  setViewGateVisual: (value) => set({ viewGateVisual: value }),
   visualizerSpeed: VISUALIZER_DEFAULTS.visualizerSpeed,
-  setVisualizerSpeed: (value) => set({visualizerSpeed: value}),
+  setVisualizerSpeed: (value) => set({ visualizerSpeed: value }),
   saveAndLoadIndex: (newIndex) => {
     const state = get();
     items[selectedIndex] = {
@@ -114,6 +147,25 @@ export const useVisualizerSettingsStore = create<VisualizerSettingsStore>((set, 
     const newItem = items[newIndex];
     selectedIndex = newIndex;
 
-    set({...newItem});
-  }
+    set({ ...newItem });
+  },
+  getUrlSnippet: () => {
+    const { saveAndLoadIndex } = get();
+    saveAndLoadIndex(selectedIndex);
+    const item = items[selectedIndex];
+    return generateUrlSnippet(item, VISUALIZER_SETTINGS_SNIPPET_ID, includedKeys, stringConverters);
+  },
+  setFromUrlSnippet: (urlSnippet) => {
+    const item = items[selectedIndex];
+    const newItem = applyUrlSnippet(
+      urlSnippet,
+      item,
+      VISUALIZER_SETTINGS_SNIPPET_ID,
+      includedKeys,
+      stringConverters
+    );
+    console.log(newItem);
+    items[selectedIndex] = newItem;
+    set({ ...newItem });
+  },
 }));

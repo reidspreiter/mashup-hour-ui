@@ -49,7 +49,7 @@ const GradientBackground = styled(BackgroundDiv)<GradientProps>`
     $direction = "to top",
     $topPercentLimit = "100%",
     $bottomPercentLimit = "0%",
-    $type = "linear-gradient"
+    $type = "linear-gradient",
   }) =>
     `${$type}(${$type === "linear-gradient" ? "to top" : "circle at center"}, ${createStops($colorStops, $direction, $topPercentLimit, $bottomPercentLimit)})`};
 `;
@@ -95,7 +95,13 @@ const ColorGradient: React.FC<Props> = ({ visualizerType, visualizerDynamicColor
     <GradientBackground
       $topPercentLimit={visualizerType === "oscilloscope" ? "71%" : "80%"}
       $bottomPercentLimit={visualizerType === "oscilloscope" ? "29%" : undefined}
-      $direction={visualizerType === "oscilloscope" ? "vertical center join" : visualizerType === "ripple" ? "to bottom" : "to top"}
+      $direction={
+        visualizerType === "oscilloscope"
+          ? "vertical center join"
+          : visualizerType === "ripple"
+            ? "to bottom"
+            : "to top"
+      }
       $type={visualizerType === "ripple" ? "radial-gradient" : "linear-gradient"}
       $colorStops={
         visualizerDynamicColor === "full"

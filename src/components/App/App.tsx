@@ -41,7 +41,17 @@ function App() {
   const [preferences, setPreferences] = useState(defaultPreferences);
   const isMobile = useIsMobile();
 
-  const {saveAndLoadIndex: setVisualizerSettingsIndex, analyzerResolution, analyzerType} = useVisualizerSettingsStore(useShallow((state) => ({analyzerType: state.analyzerType, analyzerResolution: state.analyzerResolution, saveAndLoadIndex: state.saveAndLoadIndex})));
+  const {
+    saveAndLoadIndex: setVisualizerSettingsIndex,
+    analyzerResolution,
+    analyzerType,
+  } = useVisualizerSettingsStore(
+    useShallow((state) => ({
+      analyzerType: state.analyzerType,
+      analyzerResolution: state.analyzerResolution,
+      saveAndLoadIndex: state.saveAndLoadIndex,
+    }))
+  );
 
   const [hideMashupControls, setHideMashupControls] = useState(false);
 
@@ -69,8 +79,6 @@ function App() {
     setVisualizerSettingsIndex(mashupIndex);
   }, [mashupIndex]);
 
-  
-
   useUpdate(() => {
     analyzer.type = analyzerType;
   }, [analyzerType]);
@@ -89,10 +97,11 @@ function App() {
         rightImageUrl={mashups[mashupIndex].track2.coverUrl}
       />
       <Body>
-        <NavBar
-          setHideMashupControls={setHideMashupControls}
-        />
-        <Container $isMobile={isMobile} style={{visibility: hideMashupControls ? "hidden" : "visible"}}>
+        <NavBar setHideMashupControls={setHideMashupControls} />
+        <Container
+          $isMobile={isMobile}
+          style={{ visibility: hideMashupControls ? "hidden" : "visible" }}
+        >
           <TrackController track={mashups[mashupIndex].track1} analyser={analyzer} />
           <MashupController
             mashupTitles={mashupTitles}

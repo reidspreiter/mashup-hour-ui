@@ -4,11 +4,17 @@ import { useContext, useState, useRef } from "react";
 import { PreferencesContext } from "../../contexts";
 import { Popper } from "../containers";
 import VisualizerSettingsMenu from "./VisualizerSettingsMenu";
+import { Switch, IconButton } from "../input";
 import {
-  Switch,
-  IconButton,
-} from "../input";
-import { PiChatCenteredDots, PiChatCentered, PiWaveform, PiEye, PiEyeClosed, PiCodeSimple, PiBug, PiLightbulbFilament } from "react-icons/pi";
+  PiChatCenteredDots,
+  PiChatCentered,
+  PiWaveform,
+  PiEye,
+  PiEyeClosed,
+  PiCodeSimple,
+  PiBug,
+  PiLightbulbFilament,
+} from "react-icons/pi";
 import { openLinkInNewTab } from "../../util";
 
 interface Props {
@@ -29,21 +35,39 @@ const NavBarStyled = styled.div`
   margin: 0px;
 `;
 
-const NavBar: React.FC<Props> = ({
-  setHideMashupControls,
-}) => {
+const NavBar: React.FC<Props> = ({ setHideMashupControls }) => {
   const { preferences, setPreferences } = useContext(PreferencesContext);
   const [showVisualizerCustomization, setShowVisualizerCustomization] = useState(false);
   const visualizerCustomizationButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <NavBarStyled>
-      <div style={{display: "flex", margin: "0px", padding: "0px", height: "100%"}}>
-        <IconButton description="visit GitHub repo" icon={PiCodeSimple} onClick={() => openLinkInNewTab("https://github.com/reidspreiter/mashup-hour-ui")}/>
-        <IconButton description="report a bug" icon={PiBug} onClick={() => openLinkInNewTab("https://github.com/reidspreiter/mashup-hour-ui/issues/new?template=bug_report.md")}/>
-        <IconButton description="request a feature" icon={PiLightbulbFilament} onClick={() => openLinkInNewTab("https://github.com/reidspreiter/mashup-hour-ui/issues/new?template=feature_request.md")}/>
+      <div style={{ display: "flex", margin: "0px", padding: "0px", height: "100%", gap: "4px" }}>
+        <IconButton
+          description="visit GitHub repo"
+          icon={PiCodeSimple}
+          onClick={() => openLinkInNewTab("https://github.com/reidspreiter/mashup-hour-ui")}
+        />
+        <IconButton
+          description="report a bug"
+          icon={PiBug}
+          onClick={() =>
+            openLinkInNewTab(
+              "https://github.com/reidspreiter/mashup-hour-ui/issues/new?template=bug_report.md"
+            )
+          }
+        />
+        <IconButton
+          description="request a feature"
+          icon={PiLightbulbFilament}
+          onClick={() =>
+            openLinkInNewTab(
+              "https://github.com/reidspreiter/mashup-hour-ui/issues/new?template=feature_request.md"
+            )
+          }
+        />
       </div>
-      <div style={{display: "flex", margin: "0px", padding: "0px", height: "100%"}}>
+      <div style={{ display: "flex", margin: "0px", padding: "0px", height: "100%", gap: "4px" }}>
         <Switch
           description="hide tooltips"
           icon={PiChatCenteredDots}
@@ -71,7 +95,7 @@ const NavBar: React.FC<Props> = ({
         />
       </div>
       <Popper open={showVisualizerCustomization} anchor={visualizerCustomizationButtonRef}>
-        <VisualizerSettingsMenu/>
+        <VisualizerSettingsMenu />
       </Popper>
     </NavBarStyled>
   );

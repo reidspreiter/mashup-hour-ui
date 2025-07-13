@@ -25,16 +25,16 @@ export class Player {
   private blob: Blob;
   private player: Tone.Player;
 
-  private analyser: Tone.Analyser;
+  private gainProxy: Tone.Gain;
 
-  constructor(title: string, preview: string, analyser: Tone.Analyser) {
+  constructor(title: string, preview: string, gainProxy: Tone.Gain) {
     const { blob, previewUrl } = getBlobAndPreviewUrl(preview);
     this.blob = blob;
     this.previewUrl = previewUrl;
     this.title = title;
-    this.player = new Tone.Player(previewUrl).toDestination();
-    this.analyser = analyser;
-    this.player.connect(this.analyser);
+    this.player = new Tone.Player(previewUrl);
+    this.gainProxy = gainProxy;
+    this.player.connect(this.gainProxy);
     this.player.loop = true;
   }
 
@@ -51,8 +51,8 @@ export class Player {
     this.blob = blob;
     this.previewUrl = previewUrl;
     this.title = title;
-    this.player = new Tone.Player(previewUrl).toDestination();
-    this.player.connect(this.analyser);
+    this.player = new Tone.Player(previewUrl);
+    this.player.connect(this.gainProxy);
     this.player.loop = true;
   };
 

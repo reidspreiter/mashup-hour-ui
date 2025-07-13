@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import type { Dispatch, SetStateAction } from "react";
 import { useContext, useState, useRef } from "react";
-import { PreferencesContext } from "../../contexts";
+import { AudioEventTriggerContext, PreferencesContext } from "../../contexts";
 import { Popper } from "../containers";
 import VisualizerSettingsMenu from "./VisualizerSettingsMenu";
 import { Switch, IconButton } from "../input";
@@ -14,6 +14,8 @@ import {
   PiCodeSimple,
   PiBug,
   PiLightbulbFilament,
+  PiSpeakerSimpleSlash,
+  PiSpeakerSimpleHigh,
 } from "react-icons/pi";
 import { openLinkInNewTab } from "../../util";
 
@@ -37,6 +39,7 @@ const NavBarStyled = styled.div`
 
 const NavBar: React.FC<Props> = ({ setHideMashupControls }) => {
   const { preferences, setPreferences } = useContext(PreferencesContext);
+  const { applyMute, setApplyMute } = useContext(AudioEventTriggerContext);
   const [showVisualizerCustomization, setShowVisualizerCustomization] = useState(false);
   const visualizerCustomizationButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -68,6 +71,13 @@ const NavBar: React.FC<Props> = ({ setHideMashupControls }) => {
         />
       </div>
       <div style={{ display: "flex", margin: "0px", padding: "0px", height: "100%", gap: "4px" }}>
+        <Switch
+          description="mute audio"
+          icon={PiSpeakerSimpleHigh}
+          enabledIcon={PiSpeakerSimpleSlash}
+          startEnabled={applyMute}
+          onClick={(state) => setApplyMute(state)}
+        />
         <Switch
           description="hide tooltips"
           icon={PiChatCenteredDots}

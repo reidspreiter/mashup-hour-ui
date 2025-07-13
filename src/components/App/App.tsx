@@ -42,6 +42,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [preferences, setPreferences] = useState(defaultPreferences);
   const [applyLowPass, setApplyLowPass] = useState(false);
+  const [applyMute, setApplyMute] = useState(false);
   const isMobile = useIsMobile();
 
   const {
@@ -83,6 +84,10 @@ function App() {
     }
   }, [applyLowPass]);
 
+  useEffect(() => {
+    gainProxy.gain.rampTo(Number(!applyMute), 0.1);
+  }, [applyMute]);
+
   const mashupTitles = useMemo(() => mashups.map((mashup) => mashup.mashedTrack.title), [mashups]);
 
   const fetchMashups = async () => {
@@ -118,7 +123,7 @@ function App() {
     <>Loading...</>
   ) : (
     <PreferencesContext.Provider value={{ preferences, setPreferences }}>
-      <AudioEventTriggerContext.Provider value={{ applyLowPass, setApplyLowPass }}>
+      <AudioEventTriggerContext.Provider value={{ applyLowPass, setApplyLowPass, applyMute, setApplyMute }}>
         <Background
           analyzer={analyzer}
           leftImageUrl={mashups[mashupIndex].track1.coverUrl}

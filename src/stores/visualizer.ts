@@ -164,7 +164,6 @@ export const useVisualizerSettingsStore = create<VisualizerSettingsStore>((set, 
       includedKeys,
       stringConverters
     );
-    console.log(newItem);
     items[selectedIndex] = newItem;
     set({ ...newItem });
   },

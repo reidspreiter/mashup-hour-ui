@@ -7,7 +7,7 @@ import MashupController from "../mashup";
 import TrackController from "../track";
 import { data } from "../../../sampleData";
 import * as Tone from "tone";
-import { PreferencesContext, defaultPreferences } from "../../contexts";
+import { PreferencesContext, defaultPreferences, AudioEventTriggerContext } from "../../contexts";
 import { NavBar } from "../navbar";
 import { Background } from "../background";
 import { useVisualizerSettingsStore } from "../../stores/visualizer";
@@ -41,6 +41,7 @@ function App() {
   const [mashupIndex, setMashupIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [preferences, setPreferences] = useState(defaultPreferences);
+  const [applyLowPass, setApplyLowPass] = useState(false);
   const isMobile = useIsMobile();
 
   const {
@@ -57,7 +58,31 @@ function App() {
 
   const [hideMashupControls, setHideMashupControls] = useState(false);
 
+  const gainProxy = useMemo(() => new Tone.Gain(), []);
+  const lowpassFilter = useMemo(() => new Tone.Filter(20000, "lowpass"), []);
   const analyzer = useMemo(() => new Tone.Analyser("fft", analyzerResolution), []);
+
+  useEffect(() => {
+    gainProxy.connect(analyzer);
+    analyzer.toDestination();
+  }, []);
+
+  useEffect(() => {
+    if (applyLowPass) {
+      gainProxy.disconnect();
+      gainProxy.connect(lowpassFilter);
+      lowpassFilter.connect(analyzer);
+      lowpassFilter.frequency.rampTo(300, 0.5);
+    } else {
+      lowpassFilter.frequency.rampTo(20000, 0.5);
+      setTimeout(() => {
+        gainProxy.disconnect();
+        gainProxy.connect(analyzer);
+        lowpassFilter.disconnect();
+      }, 501);
+    }
+  }, [applyLowPass]);
+
   const mashupTitles = useMemo(() => mashups.map((mashup) => mashup.mashedTrack.title), [mashups]);
 
   const fetchMashups = async () => {
@@ -93,27 +118,29 @@ function App() {
     <>Loading...</>
   ) : (
     <PreferencesContext.Provider value={{ preferences, setPreferences }}>
-      <Background
-        analyzer={analyzer}
-        leftImageUrl={mashups[mashupIndex].track1.coverUrl}
-        rightImageUrl={mashups[mashupIndex].track2.coverUrl}
-      />
-      <Body>
-        <NavBar setHideMashupControls={setHideMashupControls} />
-        <Container
-          $isMobile={isMobile}
-          style={{ visibility: hideMashupControls ? "hidden" : "visible" }}
-        >
-          <TrackController track={mashups[mashupIndex].track1} analyser={analyzer} />
-          <MashupController
-            mashupTitles={mashupTitles}
-            mashup={mashups[mashupIndex].mashedTrack}
-            mashupIndex={mashupIndex}
-            setMashupIndex={setMashupIndex}
-          />
-          <TrackController track={mashups[mashupIndex].track2} analyser={analyzer} />
-        </Container>
-      </Body>
+      <AudioEventTriggerContext.Provider value={{ applyLowPass, setApplyLowPass }}>
+        <Background
+          analyzer={analyzer}
+          leftImageUrl={mashups[mashupIndex].track1.coverUrl}
+          rightImageUrl={mashups[mashupIndex].track2.coverUrl}
+        />
+        <Body>
+          <NavBar setHideMashupControls={setHideMashupControls} />
+          <Container
+            $isMobile={isMobile}
+            style={{ visibility: hideMashupControls ? "hidden" : "visible" }}
+          >
+            <TrackController track={mashups[mashupIndex].track1} gainProxy={gainProxy} />
+            <MashupController
+              mashupTitles={mashupTitles}
+              mashup={mashups[mashupIndex].mashedTrack}
+              mashupIndex={mashupIndex}
+              setMashupIndex={setMashupIndex}
+            />
+            <TrackController track={mashups[mashupIndex].track2} gainProxy={gainProxy} />
+          </Container>
+        </Body>
+      </AudioEventTriggerContext.Provider>
     </PreferencesContext.Provider>
   );
 }

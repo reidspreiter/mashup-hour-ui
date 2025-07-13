@@ -9,11 +9,11 @@ import * as Tone from "tone";
 
 interface Props {
   track: s.Track;
-  analyser: Tone.Analyser;
+  gainProxy: Tone.Gain;
 }
 
-const TrackController: React.FC<Props> = ({ track, analyser }) => {
-  const player = useMemo(() => new Player(track.title, track.preview, analyser), []);
+const TrackController: React.FC<Props> = ({ track, gainProxy }) => {
+  const player = useMemo(() => new Player(track.title, track.preview, gainProxy), []);
 
   useUpdate(() => {
     player.loadTrack(track.title, track.preview);

@@ -22,6 +22,8 @@ const Body = styled.div`
 const Container = styled.div<{ $isMobile?: boolean }>`
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
+  padding: 0px 10px 10px;
   justify-content: space-between;
   align-items: stretch;
   height: 100vh;

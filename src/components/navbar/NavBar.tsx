@@ -23,7 +23,7 @@ interface Props {
 
 const NavBarStyled = styled.div`
   width: 100%;
-  height: 55px;
+  min-height: 50px;
   background-color: transparent;
   display: flex;
   align-items: center;

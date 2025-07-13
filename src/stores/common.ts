@@ -50,7 +50,7 @@ export const applyUrlSnippet = <T extends object>(
     const currVal = obj[key];
 
     if (typeof currVal === "boolean") {
-      obj[key] = Boolean(snippetVal) as T[typeof key];
+      obj[key] = Boolean(Number(snippetVal)) as T[typeof key];
     } else if (typeof currVal === "number") {
       obj[key] = Number(snippetVal) as T[typeof key];
     } else if (typeof currVal === "string" && stringConverters[key]) {

@@ -1,7 +1,7 @@
 import type React from "react";
 import { booleanGate } from "../../audio";
 import { getLogData, smoothLowFrequencies } from "../../audio";
-import type { VisualizerColorSource } from "./Background";
+import type { VisualizerColorSource } from "../../stores";
 import { Analyser } from "tone";
 import { useEffect, useRef } from "react";
 import { BackgroundCanvas } from "./containers";

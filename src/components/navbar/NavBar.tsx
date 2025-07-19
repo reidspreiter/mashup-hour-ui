@@ -20,6 +20,7 @@ import {
 import { openLinkInNewTab } from "../../util";
 
 interface Props {
+  hideMashupControls: boolean;
   setHideMashupControls: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -37,7 +38,7 @@ const NavBarStyled = styled.div`
   margin: 0px;
 `;
 
-const NavBar: React.FC<Props> = ({ setHideMashupControls }) => {
+const NavBar: React.FC<Props> = ({ hideMashupControls, setHideMashupControls }) => {
   const { preferences, setPreferences } = useContext(PreferencesContext);
   const { applyMute, setApplyMute } = useContext(AudioEventTriggerContext);
   const [showVisualizerCustomization, setShowVisualizerCustomization] = useState(false);
@@ -75,15 +76,15 @@ const NavBar: React.FC<Props> = ({ setHideMashupControls }) => {
           description="mute audio"
           icon={PiSpeakerSimpleHigh}
           enabledIcon={PiSpeakerSimpleSlash}
-          startEnabled={applyMute}
-          onClick={(state) => setApplyMute(state)}
+          state={applyMute}
+          setState={setApplyMute}
         />
         <Switch
           description="hide tooltips"
           icon={PiChatCenteredDots}
           enabledIcon={PiChatCentered}
-          startEnabled={preferences.disableTooltips}
-          onClick={(isEnabled) => {
+          state={preferences.disableTooltips}
+          setState={(isEnabled) => {
             setPreferences((prev) => ({
               ...prev,
               disableTooltips: isEnabled,
@@ -94,14 +95,15 @@ const NavBar: React.FC<Props> = ({ setHideMashupControls }) => {
           description="hide mashup controls"
           icon={PiEye}
           enabledIcon={PiEyeClosed}
-          startEnabled={false}
-          onClick={setHideMashupControls}
+          state={hideMashupControls}
+          setState={setHideMashupControls}
         />
         <Switch
           ref={visualizerCustomizationButtonRef}
           description="customize visualizer"
           icon={PiWaveform}
-          onClick={(isEnabled) => setShowVisualizerCustomization(isEnabled)}
+          state={showVisualizerCustomization}
+          setState={setShowVisualizerCustomization}
         />
       </div>
       <Popper open={showVisualizerCustomization} anchor={visualizerCustomizationButtonRef}>

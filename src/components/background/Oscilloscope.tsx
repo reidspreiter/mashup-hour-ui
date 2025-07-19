@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import { useEffect, useRef } from "react";
 import { BackgroundCanvas } from "./containers";
-import type { VisualizerColorSource } from "./Background";
+import type { VisualizerColorSource } from "../../stores";
 
 interface Props {
   analyzer: Tone.Analyser;

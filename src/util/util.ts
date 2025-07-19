@@ -29,3 +29,12 @@ export const openLinkInNewTab = (url: string) => {
     newWindow.opener = null;
   }
 };
+
+export const getDecimalPlaces = (num: number): number => {
+  const parts = num.toString().split(".");
+  return parts[1]?.length || 0;
+};
+
+export const clamp = (min: number, value: number, max: number) => {
+  return Math.min(max, Math.max(min, value));
+};

@@ -6,7 +6,7 @@ interface AudioEventTriggerContextType {
   setApplyLowPass: Dispatch<SetStateAction<boolean>>;
   applyMute: boolean;
   setApplyMute: Dispatch<SetStateAction<boolean>>;
-};
+}
 
 const AudioEventTriggerContext = createContext<AudioEventTriggerContextType>({
   applyLowPass: false,

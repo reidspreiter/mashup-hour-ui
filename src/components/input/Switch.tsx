@@ -1,5 +1,4 @@
 import type { IconType } from "react-icons";
-import { useState } from "react";
 import { forwardRef } from "react";
 import IconButton from "./IconButton";
 
@@ -9,8 +8,9 @@ interface Props {
   icon: IconType;
   enabledIcon?: IconType;
   enabledColor?: string;
-  onClick: (isEnabled: boolean) => void;
-  startEnabled?: boolean;
+  setState: (state: boolean) => void | Promise<void>;
+  state: boolean;
+  style?: React.CSSProperties;
 }
 
 const Switch = forwardRef<HTMLButtonElement, Props>(
@@ -21,23 +21,19 @@ const Switch = forwardRef<HTMLButtonElement, Props>(
       icon,
       enabledIcon = icon,
       enabledColor = "var(--pink)",
-      onClick,
-      startEnabled = false,
+      state,
+      setState,
+      style,
     },
     ref
   ) => {
-    const [isEnabled, setIsEnabled] = useState(startEnabled);
-
     return (
       <IconButton
         ref={ref}
-        description={isEnabled ? enabledDescription : description}
-        icon={isEnabled ? enabledIcon : icon}
-        onClick={() => {
-          setIsEnabled(!isEnabled);
-          onClick(!isEnabled);
-        }}
-        style={isEnabled ? { color: enabledColor } : undefined}
+        description={state ? enabledDescription : description}
+        icon={state ? enabledIcon : icon}
+        onClick={async () => setState(!state)}
+        style={state ? { ...style, color: enabledColor } : style}
       />
     );
   }

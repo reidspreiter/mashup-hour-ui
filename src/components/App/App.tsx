@@ -10,7 +10,12 @@ import * as Tone from "tone";
 import { PreferencesContext, defaultPreferences, AudioEventTriggerContext } from "../../contexts";
 import { NavBar } from "../navbar";
 import { Background } from "../background";
-import { useVisualizerSettingsStore } from "../../stores/visualizer";
+import {
+  useVisualizerSettingsStore,
+  usePlayerSettingsStoreA,
+  usePlayerSettingsStoreB,
+} from "../../stores";
+
 import { useShallow } from "zustand/shallow";
 
 const Body = styled.div`
@@ -55,6 +60,13 @@ function App() {
       analyzerResolution: state.analyzerResolution,
       saveAndLoadIndex: state.saveAndLoadIndex,
     }))
+  );
+
+  const { saveAndLoadIndex: setPlayerSettingsAIndex } = usePlayerSettingsStoreA(
+    useShallow((state) => ({ saveAndLoadIndex: state.saveAndLoadIndex }))
+  );
+  const { saveAndLoadIndex: setPlayerSettingsBIndex } = usePlayerSettingsStoreB(
+    useShallow((state) => ({ saveAndLoadIndex: state.saveAndLoadIndex }))
   );
 
   const [hideMashupControls, setHideMashupControls] = useState(false);
@@ -109,6 +121,8 @@ function App() {
 
   useEffect(() => {
     setVisualizerSettingsIndex(mashupIndex);
+    setPlayerSettingsAIndex(mashupIndex);
+    setPlayerSettingsBIndex(mashupIndex);
   }, [mashupIndex]);
 
   useUpdate(() => {
@@ -123,26 +137,39 @@ function App() {
     <>Loading...</>
   ) : (
     <PreferencesContext.Provider value={{ preferences, setPreferences }}>
-      <AudioEventTriggerContext.Provider value={{ applyLowPass, setApplyLowPass, applyMute, setApplyMute }}>
+      <AudioEventTriggerContext.Provider
+        value={{ applyLowPass, setApplyLowPass, applyMute, setApplyMute }}
+      >
         <Background
           analyzer={analyzer}
           leftImageUrl={mashups[mashupIndex].track1.coverUrl}
           rightImageUrl={mashups[mashupIndex].track2.coverUrl}
         />
         <Body>
-          <NavBar setHideMashupControls={setHideMashupControls} />
+          <NavBar
+            hideMashupControls={hideMashupControls}
+            setHideMashupControls={setHideMashupControls}
+          />
           <Container
             $isMobile={isMobile}
             style={{ visibility: hideMashupControls ? "hidden" : "visible" }}
           >
-            <TrackController track={mashups[mashupIndex].track1} gainProxy={gainProxy} />
+            <TrackController
+              track={mashups[mashupIndex].track1}
+              gainProxy={gainProxy}
+              trackID="A"
+            />
             <MashupController
               mashupTitles={mashupTitles}
               mashup={mashups[mashupIndex].mashedTrack}
               mashupIndex={mashupIndex}
               setMashupIndex={setMashupIndex}
             />
-            <TrackController track={mashups[mashupIndex].track2} gainProxy={gainProxy} />
+            <TrackController
+              track={mashups[mashupIndex].track2}
+              gainProxy={gainProxy}
+              trackID="B"
+            />
           </Container>
         </Body>
       </AudioEventTriggerContext.Provider>

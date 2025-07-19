@@ -8,14 +8,14 @@ import { Icon } from "../text";
 interface Props {
   description: string;
   icon: IconType;
-  onClick: () => void;
+  onClick: () => void | Promise<void>;
   style?: React.CSSProperties;
 }
 
 export const BaseIconButton = styled.button`
   padding: 0px;
-  height: 100%;
   background: transparent;
+  height: 100%;
   border: none;
   position: relative;
   display: flex;
@@ -26,9 +26,18 @@ export const BaseIconButton = styled.button`
 const IconButton = forwardRef<HTMLButtonElement, Props>(
   ({ description, icon, onClick, style }, ref) => {
     return (
-      <BaseIconButton ref={ref} onClick={() => onClick()}>
+      <BaseIconButton ref={ref}>
         <Tooltip text={description}>
-          <Icon as={icon} style={style} />
+          <Icon
+            as={icon}
+            style={style}
+            onClick={async () => {
+              const result = onClick();
+              if (result instanceof Promise) {
+                await result;
+              }
+            }}
+          />
         </Tooltip>
       </BaseIconButton>
     );

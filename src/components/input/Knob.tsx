@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useThrotteCallback } from "../../hooks";
 import { Label } from "../text";
 import { Par } from "../text";
-import { objsEqual } from "../../util";
+import { objsEqual, getDecimalPlaces } from "../../util";
 
 export interface StepMode {
   type: "steps";
@@ -17,6 +17,8 @@ export interface RangeMode {
   max: number;
   step: number;
   default?: { value: number; min: number; max: number };
+  customValueToPercent?: (value: number, min: number, max: number) => number;
+  customPercentToValue?: (percent: number, min: number, max: number) => number;
 }
 
 interface Props {
@@ -87,7 +89,9 @@ const Knob: React.FC<Props> = ({
   const setPercentFromValue = (currValue: number) => {
     let initialPercent = 0;
     if (config.type === "range") {
-      initialPercent = (currValue - config.min) / (config.max - config.min);
+      initialPercent = config.customValueToPercent
+        ? config.customValueToPercent(currValue, config.min, config.max)
+        : (currValue - config.min) / (config.max - config.min);
     } else {
       const index = config.steps.indexOf(currValue);
       if (index === -1) {
@@ -103,7 +107,7 @@ const Knob: React.FC<Props> = ({
 
   useEffect(() => {
     setPercentFromValue(value);
-  }, []);
+  }, [value]);
 
   const setValueFromPercent = (newPercent: number) => {
     let newValue;
@@ -115,10 +119,12 @@ const Knob: React.FC<Props> = ({
       newValue = config.steps[index];
       newVisualizedPercent = index / maxIndex;
     } else {
-      const range = config.max - config.min;
-      newValue = Math.floor(config.min + (range * newPercent) / config.step);
+      const rawValue = config.customPercentToValue
+        ? config.customPercentToValue(newPercent, config.min, config.max)
+        : config.min + (config.max - config.min) * newPercent;
+      const steppedValue = Math.round(rawValue / config.step) * config.step;
+      newValue = parseFloat(steppedValue.toFixed(getDecimalPlaces(config.step)));
     }
-
     percentRef.current = newPercent;
     setVisualizedPercent(newVisualizedPercent);
     handleChange(newValue);
@@ -135,8 +141,13 @@ const Knob: React.FC<Props> = ({
     if (config.default) {
       let defaultPercent = 0;
       if (config.type === "range") {
-        defaultPercent =
-          (config.default.value - config.default.min) / (config.default.max - config.default.min);
+        defaultPercent = config.customValueToPercent
+          ? config.customValueToPercent(
+              config.default.value,
+              config.default.min,
+              config.default.max
+            )
+          : (config.default.value - config.default.min) / (config.default.max - config.default.min);
       } else {
         const index = config.default.steps.indexOf(config.default.value);
         if (index === -1) {

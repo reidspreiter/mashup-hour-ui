@@ -1,6 +1,6 @@
 import { BackgroundDiv } from "./containers";
 import styled from "styled-components";
-import type { VisualizerType, VisualizerDynamicColor } from "./Background";
+import type { VisualizerType, VisualizerDynamicColor } from "../../stores";
 
 interface Props {
   visualizerType: VisualizerType;

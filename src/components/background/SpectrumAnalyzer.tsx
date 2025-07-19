@@ -2,7 +2,7 @@ import * as Tone from "tone";
 import { useEffect, useRef } from "react";
 import { BackgroundCanvas } from "./containers";
 import { getLogData, smoothLowFrequencies } from "../../audio";
-import type { VisualizerColorSource } from "./Background";
+import type { VisualizerColorSource } from "../../stores";
 import { drawSpectrumAnalyzer } from "./common";
 
 interface Props {

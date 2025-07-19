@@ -1,5 +1,5 @@
 /**
- * Determined whether a range of frequencies meet a threshold.
+ * Determines whether a range of frequencies meet a threshold.
  * Use raw state to avoid conflicts from trigger and changing inversion setting.
  * @returns [raw state, state with applied inversion]
  */

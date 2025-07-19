@@ -13,29 +13,28 @@ const CasingContainer = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 4px 0px;
+  justify-content: flex-end;
   border-radius: 10px;
 `;
 
 const SubCasing = styled.div`
   width: 100%;
-  height: auto;
+  min-height: 25px;
   display: flex;
+  gap: 4px;
   justify-content: center;
   align-items: center;
-  margin-bottom: 6px;
 `;
 
 const Casing: React.FC<Props> = ({ children, sub1, sub2, sub3 }: Props) => {
   return (
     <CasingContainer>
+      {children}
       <SubCasing>
         {sub1}
         {sub2}
         {sub3}
       </SubCasing>
-      {children}
     </CasingContainer>
   );
 };

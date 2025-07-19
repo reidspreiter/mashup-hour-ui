@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Region = styled.div`
   border-radius: 10px;
-  padding: 10px;
+  padding: 5px;
   background-color: var(--surface-10);
   backdrop-filter: blur(2px);
   margin-bottom: 10px;
